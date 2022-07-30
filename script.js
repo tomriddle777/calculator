@@ -54,7 +54,8 @@ display.addEventListener('click', displayNumbers);
 clear = document.querySelector(".clear");
 clear.addEventListener('click', clearDisplay);
 
-numbers = document.querySelectorAll('.numpad button');
+numbers = document.querySelectorAll('.numpad .num');
+console.log(numbers);
 numbers.forEach(number => {
   number = number.addEventListener('click', numberClicked)
 });
