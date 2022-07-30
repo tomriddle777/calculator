@@ -16,48 +16,76 @@ function divide(a, b) {
 
 function operate(operator, a, b) {
   switch (operator) {
-    case "add":
-      add(a, b);
+    case "+":
+      return add(a, b);
       break;
-    case "subtract":
-      subtract(a, b);
+    case "-":
+      return subtract(a, b);
       break;
-    case "multiply":
-      multiply(a, b);
+    case "*":
+      return multiply(a, b);
       break;
-    case "divide":
-      divide(a, b);
+    case "/":
+      return divide(a, b);
       break;
   }
 }
 
-function displayNumbers() {
-  display.textContent = numberList.join("");
+let numberList1 = [],
+  numberList2 = [];
+let operator = "";
+let masterList = [];
+
+display = document.querySelector('.display');
+
+clear = document.querySelector(".clear");
+clear.addEventListener('click', () => {
+  clearDisplay();
+  clearMemory();
+});
+
+numbers = document.querySelectorAll('.numpad .num');
+numbers.forEach(number => {
+  number.addEventListener('click', numberClicked)
+});
+
+operators = document.querySelectorAll('.operators');
+operators.forEach(operator => {
+  operator.addEventListener('click', operatorClicked)
+})
+
+equals = document.querySelector('.equals');
+equals.addEventListener('click', equalsClicked);
+
+function displayNumbers(item) {
+  display.textContent = item;
 }
 
 function clearDisplay() {
   display.textContent = "0";
 }
 
-const numberList = [];
-
-function numberClicked(e) {
-  numberList.push(e.target.textContent);
-  e.stopPropagation();
-  console.log(numberList);
-  displayNumbers();
+function clearMemory() {
+  numberList1 = [];
+  numberList2 = [];
+  operator = "";
 }
 
-display = document.querySelector('.display');
-display.addEventListener('click', displayNumbers);
+function numberClicked(e) {
+  numberList1.push(e.target.textContent);
+  console.log(numberList1);
+  displayNumbers(numberList1.join(""));
+}
 
-clear = document.querySelector(".clear");
-clear.addEventListener('click', clearDisplay);
+function operatorClicked(e) {
+  operator = e.target.textContent;
+  clearDisplay()
+  numberList2 = numberList1;
+  numberList1 = [];
+  console.log(operator);
+}
 
-numbers = document.querySelectorAll('.numpad .num');
-console.log(numbers);
-numbers.forEach(number => {
-  number = number.addEventListener('click', numberClicked)
-});
-
-
+function equalsClicked(e) {
+  displayNumbers(operate(operator, numberList2.join(""), numberList1.join("")));
+  clearMemory();
+}
