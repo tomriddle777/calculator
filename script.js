@@ -26,7 +26,11 @@ function operate(operator, a, b) {
       return multiply(a, b);
       break;
     case "/":
-      return divide(a, b);
+      let returnAns = divide(a, b);
+      if (b != 0) {
+        return returnAns.toFixed(2);
+      }
+      return "Baka.";
       break;
   }
 }
@@ -34,7 +38,8 @@ function operate(operator, a, b) {
 let numberList1 = [],
   numberList2 = [];
 let operator = "";
-let masterList = [];
+let answer;
+let round = 1;
 
 display = document.querySelector('.display');
 
@@ -46,12 +51,12 @@ clear.addEventListener('click', () => {
 
 numbers = document.querySelectorAll('.numpad .num');
 numbers.forEach(number => {
-  number.addEventListener('click', numberClicked)
+  number.addEventListener('click', numberClicked);
 });
 
 operators = document.querySelectorAll('.operators');
 operators.forEach(operator => {
-  operator.addEventListener('click', operatorClicked)
+  operator.addEventListener('click', operatorClicked);
 })
 
 equals = document.querySelector('.equals');
@@ -63,29 +68,68 @@ function displayNumbers(item) {
 
 function clearDisplay() {
   display.textContent = "0";
+  round = 1;
 }
 
 function clearMemory() {
   numberList1 = [];
   numberList2 = [];
   operator = "";
+  round = 1;
 }
 
 function numberClicked(e) {
+  if (round === -1) {
+    clearMemory();
+  }
   numberList1.push(e.target.textContent);
-  console.log(numberList1);
   displayNumbers(numberList1.join(""));
 }
 
 function operatorClicked(e) {
+  if (round === 2) {
+    answer = operate(operator, numberList2.join(""), numberList1.join(""));
+    displayNumbers(answer);
+  } else if (round > 2) {
+    numberList2 = answer
+    answer = operate(operator, numberList2, numberList1.join(""));
+    displayNumbers(answer);
+  } else if (round === -1) {
+    operator = e.target.textContent;
+    round++;
+    return;
+  } else if (round === 0) {
+    answer = operate(operator, numberList2.join(""), numberList1.join(""));
+    displayNumbers(answer);
+    round = 2;
+  }
   operator = e.target.textContent;
-  clearDisplay()
   numberList2 = numberList1;
   numberList1 = [];
-  console.log(operator);
+  round++;
 }
 
-function equalsClicked(e) {
-  displayNumbers(operate(operator, numberList2.join(""), numberList1.join("")));
+function equalsClicked() {
+  if (numberList2.length === 0 && round >= 1) {
+    displayNumbers(numberList1.join(""));
+    round = -1;
+    return;
+  }
+  if (numberList1.length === 0) {
+    displayNumbers(numberList2.join(""));
+    round = -1;
+    return;
+  }
+  if (round === 2) {
+    answer = operate(operator, numberList2.join(""), numberList1.join(""));
+  } else if (round === 0) {
+    answer = operate(operator, numberList2.join(""), numberList1.join(""));
+    round = 2;
+  } else {
+    answer = operate(operator, answer, numberList1.join(""));
+  }
+  displayNumbers(answer);
   clearMemory();
+  numberList2 = answer.toString().split("");
+  round = -1;
 }
